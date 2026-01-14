@@ -1,0 +1,678 @@
+Conversation opened. 1 unread message.
+
+Skip to content
+Using Gmail with screen readers
+Conversations
+0% of 15 GB used
+Terms · Privacy · Program Policies
+Last account activity: 7 days ago
+Details
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campionato di Atletica</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+        .game-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            width: 90%;
+            max-width: 800px;
+            padding: 30px;
+        }
+        h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 2.5em;
+        }
+        .menu {
+            text-align: center;
+        }
+        .menu button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            margin: 10px;
+            border-radius: 10px;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .menu button:hover {
+            transform: scale(1.05);
+        }
+        .game-area {
+            display: none;
+        }
+        .track {
+            background: linear-gradient(to bottom, #e8f5e9 0%, #81c784 100%);
+            border: 3px solid #333;
+            border-radius: 10px;
+            padding: 20px;
+            position: relative;
+            height: 300px;
+            margin: 20px 0;
+        }
+        .lane {
+            background: #d84315;
+            height: 40px;
+            margin: 10px 0;
+            border-radius: 5px;
+            position: relative;
+            border: 2px dashed white;
+        }
+        .runner {
+            width: 40px;
+            height: 40px;
+            background: #2196F3;
+            border-radius: 50%;
+            position: absolute;
+            left: 0;
+            transition: left 0.1s linear;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+        .opponent {
+            background: #f44336;
+        }
+        .hurdle-track {
+            background: linear-gradient(to bottom, #e3f2fd 0%, #90caf9 100%);
+            height: 200px;
+        }
+        .hurdle {
+            width: 10px;
+            height: 30px;
+            background: #ff9800;
+            position: absolute;
+            bottom: 5px;
+        }
+        .instructions {
+            background: #fff3e0;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 4px solid #ff9800;
+        }
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+        .stat-item {
+            background: #e8eaf6;
+            padding: 10px 20px;
+            border-radius: 10px;
+        }
+        .button-row {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .action-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .action-btn:hover {
+            background: #45a049;
+            transform: scale(1.05);
+        }
+        .action-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .results {
+            background: #e8f5e9;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .back-btn {
+            background: #757575;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .back-btn:hover {
+            background: #616161;
+        }
+        .medal {
+            font-size: 3em;
+            margin: 10px 0;
+        }
+        #javelin-area {
+            background: linear-gradient(to bottom, #bbdefb 0%, #90caf9 100%);
+            height: 300px;
+            position: relative;
+            overflow: hidden;
+        }
+        .athlete {
+            width: 40px;
+            height: 60px;
+            background: #2196F3;
+            position: absolute;
+            bottom: 20px;
+            left: 50px;
+            border-radius: 20px 20px 5px 5px;
+        }
+        .javelin {
+            width: 80px;
+            height: 4px;
+            background: #ff9800;
+            position: absolute;
+            transform-origin: left center;
+        }
+        .distance-marker {
+            position: absolute;
+            bottom: 0;
+            font-size: 12px;
+            color: #666;
+        }
+        .power-bar {
+            width: 100%;
+            height: 30px;
+            background: #ddd;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        .power-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50 0%, #ff9800 50%, #f44336 100%);
+            width: 0%;
+            transition: width 0.05s linear;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>🏃 Campionato di Atletica 🏃</h1>
+        
+        <div id="menu" class="menu">
+            <p style="margin: 20px 0; font-size: 1.1em;">Scegli la tua disciplina:</p>
+            <button onclick="startGame('sprint')">🏃 100m Sprint</button>
+            <button onclick="startGame('hurdles')">🚧 110m Ostacoli</button>
+            <button onclick="startGame('javelin')">🎯 Lancio del Giavellotto</button>
+        </div>
+
+        <!-- 100m Sprint -->
+        <div id="sprint-game" class="game-area">
+            <div class="instructions">
+                <strong>Istruzioni:</strong> Premi ripetutamente SPAZIO il più velocemente possibile per correre!
+            </div>
+            <div class="stats">
+                <div class="stat-item">⏱️ Tempo: <span id="sprint-time">0.00</span>s</div>
+                <div class="stat-item">📏 Distanza: <span id="sprint-distance">0</span>m</div>
+            </div>
+            <div class="track">
+                <div class="lane">
+                    <div class="runner" id="player-runner">🏃</div>
+                </div>
+                <div class="lane">
+                    <div class="runner opponent" id="opponent1">🤖</div>
+                </div>
+                <div class="lane">
+                    <div class="runner opponent" id="opponent2">🤖</div>
+                </div>
+            </div>
+            <div class="button-row">
+                <button class="action-btn" id="sprint-start" onclick="startSprint()">Inizia Gara!</button>
+            </div>
+            <div id="sprint-results" class="results" style="display: none;"></div>
+            <button class="back-btn" onclick="backToMenu()">← Torna al Menu</button>
+        </div>
+
+        <!-- 110m Hurdles -->
+        <div id="hurdles-game" class="game-area">
+            <div class="instructions">
+                <strong>Istruzioni:</strong> Premi SPAZIO per correre e premi quando sei vicino agli ostacoli per saltare!
+            </div>
+            <div class="stats">
+                <div class="stat-item">⏱️ Tempo: <span id="hurdles-time">0.00</span>s</div>
+                <div class="stat-item">🚧 Ostacoli: <span id="hurdles-count">0</span>/10</div>
+            </div>
+            <div class="track hurdle-track" id="hurdles-track">
+                <div class="lane">
+                    <div class="runner" id="hurdles-runner">🏃</div>
+                </div>
+            </div>
+            <div class="button-row">
+                <button class="action-btn" id="hurdles-start" onclick="startHurdles()">Inizia Gara!</button>
+            </div>
+            <div id="hurdles-results" class="results" style="display: none;"></div>
+            <button class="back-btn" onclick="backToMenu()">← Torna al Menu</button>
+        </div>
+
+        <!-- Javelin Throw -->
+        <div id="javelin-game" class="game-area">
+            <div class="instructions">
+                <strong>Istruzioni:</strong> Premi SPAZIO per caricare la potenza, rilascia per lanciare!
+            </div>
+            <div class="stats">
+                <div class="stat-item">🎯 Miglior lancio: <span id="best-throw">0.0</span>m</div>
+                <div class="stat-item">📊 Tentativi: <span id="attempts">3</span></div>
+            </div>
+            <div class="power-bar">
+                <div class="power-fill" id="power-fill"></div>
+            </div>
+            <div id="javelin-area">
+                <div class="athlete" id="javelin-athlete">🏃</div>
+            </div>
+            <div class="button-row">
+                <button class="action-btn" id="javelin-throw" onclick="prepareThrow()">Preparati a Lanciare!</button>
+            </div>
+            <div id="javelin-results" class="results" style="display: none;"></div>
+            <button class="back-btn" onclick="backToMenu()">← Torna al Menu</button>
+        </div>
+    </div>
+
+    <script>
+        let currentGame = null;
+        let gameActive = false;
+
+        // Sprint variables
+        let sprintStartTime = 0;
+        let sprintDistance = 0;
+        let sprintInterval = null;
+        let opponentSpeeds = [];
+
+        // Hurdles variables
+        let hurdlesStartTime = 0;
+        let hurdlesDistance = 0;
+        let hurdlesCleared = 0;
+        let hurdlesArray = [];
+        let hurdlesInterval = null;
+        let isJumping = false;
+
+        // Javelin variables
+        let javelinPower = 0;
+        let javelinCharging = false;
+        let javelinInterval = null;
+        let bestThrow = 0;
+        let attemptsLeft = 3;
+
+        function startGame(game) {
+            document.getElementById('menu').style.display = 'none';
+            document.getElementById(game + '-game').style.display = 'block';
+            currentGame = game;
+            resetGame(game);
+        }
+
+        function backToMenu() {
+            document.querySelectorAll('.game-area').forEach(area => area.style.display = 'none');
+            document.getElementById('menu').style.display = 'block';
+            gameActive = false;
+            clearInterval(sprintInterval);
+            clearInterval(hurdlesInterval);
+            clearInterval(javelinInterval);
+        }
+
+        function resetGame(game) {
+            if (game === 'sprint') {
+                sprintDistance = 0;
+                document.getElementById('player-runner').style.left = '0px';
+                document.getElementById('opponent1').style.left = '0px';
+                document.getElementById('opponent2').style.left = '0px';
+                document.getElementById('sprint-time').textContent = '0.00';
+                document.getElementById('sprint-distance').textContent = '0';
+                document.getElementById('sprint-results').style.display = 'none';
+                document.getElementById('sprint-start').disabled = false;
+            } else if (game === 'hurdles') {
+                hurdlesDistance = 0;
+                hurdlesCleared = 0;
+                document.getElementById('hurdles-runner').style.left = '0px';
+                document.getElementById('hurdles-time').textContent = '0.00';
+                document.getElementById('hurdles-count').textContent = '0';
+                document.getElementById('hurdles-results').style.display = 'none';
+                document.getElementById('hurdles-start').disabled = false;
+                createHurdles();
+            } else if (game === 'javelin') {
+                bestThrow = 0;
+                attemptsLeft = 3;
+                document.getElementById('best-throw').textContent = '0.0';
+                document.getElementById('attempts').textContent = '3';
+                document.getElementById('javelin-results').style.display = 'none';
+                document.getElementById('javelin-throw').disabled = false;
+                clearJavelins();
+            }
+        }
+
+        // SPRINT GAME
+        function startSprint() {
+            gameActive = true;
+            sprintStartTime = Date.now();
+            sprintDistance = 0;
+            document.getElementById('sprint-start').disabled = true;
+            opponentSpeeds = [Math.random() * 2 + 3, Math.random() * 2 + 3];
+            
+            sprintInterval = setInterval(updateSprint, 50);
+            
+            document.addEventListener('keydown', sprintKeyPress);
+        }
+
+        function sprintKeyPress(e) {
+            if (e.code === 'Space' && gameActive && currentGame === 'sprint') {
+                e.preventDefault();
+                sprintDistance += 3;
+            }
+        }
+
+        function updateSprint() {
+            if (!gameActive) return;
+
+            const elapsed = (Date.now() - sprintStartTime) / 1000;
+            document.getElementById('sprint-time').textContent = elapsed.toFixed(2);
+            document.getElementById('sprint-distance').textContent = Math.floor(sprintDistance);
+
+            const trackWidth = document.querySelector('.lane').offsetWidth - 40;
+            const playerPos = Math.min((sprintDistance / 100) * trackWidth, trackWidth);
+            document.getElementById('player-runner').style.left = playerPos + 'px';
+
+            // Update opponents
+            const opp1Dist = opponentSpeeds[0] * elapsed * 10;
+            const opp2Dist = opponentSpeeds[1] * elapsed * 10;
+            document.getElementById('opponent1').style.left = Math.min((opp1Dist / 100) * trackWidth, trackWidth) + 'px';
+            document.getElementById('opponent2').style.left = Math.min((opp2Dist / 100) * trackWidth, trackWidth) + 'px';
+
+            if (sprintDistance >= 100) {
+                endSprint(elapsed, opp1Dist, opp2Dist);
+            }
+        }
+
+        function endSprint(playerTime, opp1Dist, opp2Dist) {
+            gameActive = false;
+            clearInterval(sprintInterval);
+            document.removeEventListener('keydown', sprintKeyPress);
+
+            const opp1Time = playerTime * (100 / opp1Dist);
+            const opp2Time = playerTime * (100 / opp2Dist);
+
+            let position = 1;
+            if (opp1Time < playerTime) position++;
+            if (opp2Time < playerTime) position++;
+
+            let medal = '';
+            let message = '';
+            if (position === 1) {
+                medal = '🥇';
+                message = 'ORO! Vittoria straordinaria!';
+            } else if (position === 2) {
+                medal = '🥈';
+                message = 'ARGENTO! Ottima prestazione!';
+            } else {
+                medal = '🥉';
+                message = 'BRONZO! Buon lavoro!';
+            }
+
+            document.getElementById('sprint-results').innerHTML = `
+                <div class="medal">${medal}</div>
+                <h2>${message}</h2>
+                <p>Il tuo tempo: <strong>${playerTime.toFixed(2)}s</strong></p>
+                <p>Avversario 1: ${opp1Time.toFixed(2)}s | Avversario 2: ${opp2Time.toFixed(2)}s</p>
+            `;
+            document.getElementById('sprint-results').style.display = 'block';
+        }
+
+        // HURDLES GAME
+        function createHurdles() {
+            const track = document.getElementById('hurdles-track');
+            const existingHurdles = track.querySelectorAll('.hurdle');
+            existingHurdles.forEach(h => h.remove());
+            
+            hurdlesArray = [];
+            for (let i = 1; i <= 10; i++) {
+                const hurdle = document.createElement('div');
+                hurdle.className = 'hurdle';
+                hurdle.style.left = (i * 60) + 'px';
+                track.appendChild(hurdle);
+                hurdlesArray.push({element: hurdle, cleared: false, position: i * 60});
+            }
+        }
+
+        function startHurdles() {
+            gameActive = true;
+            hurdlesStartTime = Date.now();
+            hurdlesDistance = 0;
+            hurdlesCleared = 0;
+            document.getElementById('hurdles-start').disabled = true;
+            
+            hurdlesInterval = setInterval(updateHurdles, 50);
+            document.addEventListener('keydown', hurdlesKeyPress);
+        }
+
+        function hurdlesKeyPress(e) {
+            if (e.code === 'Space' && gameActive && currentGame === 'hurdles') {
+                e.preventDefault();
+                if (!isJumping) {
+                    hurdlesDistance += 2;
+                    checkHurdleJump();
+                }
+            }
+        }
+
+        function checkHurdleJump() {
+            const runner = document.getElementById('hurdles-runner');
+            const runnerLeft = parseInt(runner.style.left) || 0;
+
+            hurdlesArray.forEach(hurdle => {
+                if (!hurdle.cleared && Math.abs(runnerLeft - hurdle.position) < 20) {
+                    isJumping = true;
+                    runner.style.transform = 'translateY(-20px)';
+                    hurdle.cleared = true;
+                    hurdlesCleared++;
+                    document.getElementById('hurdles-count').textContent = hurdlesCleared;
+                    
+                    setTimeout(() => {
+                        runner.style.transform = 'translateY(0)';
+                        isJumping = false;
+                    }, 300);
+                }
+            });
+        }
+
+        function updateHurdles() {
+            if (!gameActive) return;
+
+            const elapsed = (Date.now() - hurdlesStartTime) / 1000;
+            document.getElementById('hurdles-time').textContent = elapsed.toFixed(2);
+
+            const trackWidth = document.querySelector('.hurdle-track').offsetWidth - 40;
+            const runnerPos = Math.min((hurdlesDistance / 110) * trackWidth, trackWidth);
+            document.getElementById('hurdles-runner').style.left = runnerPos + 'px';
+
+            if (hurdlesDistance >= 110) {
+                endHurdles(elapsed);
+            }
+        }
+
+        function endHurdles(time) {
+            gameActive = false;
+            clearInterval(hurdlesInterval);
+            document.removeEventListener('keydown', hurdlesKeyPress);
+
+            const penalty = (10 - hurdlesCleared) * 0.5;
+            const finalTime = time + penalty;
+
+            let message = '';
+            if (hurdlesCleared === 10) {
+                message = '🥇 Perfetto! Tutti gli ostacoli superati!';
+            } else if (hurdlesCleared >= 7) {
+                message = '🥈 Buona gara! Qualche ostacolo abbattuto.';
+            } else {
+                message = '🥉 Devi allenarti di più!';
+            }
+
+            document.getElementById('hurdles-results').innerHTML = `
+                <h2>${message}</h2>
+                <p>Tempo: <strong>${time.toFixed(2)}s</strong></p>
+                <p>Ostacoli superati: <strong>${hurdlesCleared}/10</strong></p>
+                <p>Penalità: <strong>+${penalty.toFixed(2)}s</strong></p>
+                <p>Tempo finale: <strong>${finalTime.toFixed(2)}s</strong></p>
+            `;
+            document.getElementById('hurdles-results').style.display = 'block';
+        }
+
+        // JAVELIN GAME
+        function clearJavelins() {
+            const area = document.getElementById('javelin-area');
+            const javelins = area.querySelectorAll('.javelin');
+            javelins.forEach(j => j.remove());
+            const markers = area.querySelectorAll('.distance-marker');
+            markers.forEach(m => m.remove());
+        }
+
+        function prepareThrow() {
+            if (attemptsLeft <= 0) return;
+            
+            javelinPower = 0;
+            javelinCharging = true;
+            document.getElementById('javelin-throw').disabled = true;
+            document.getElementById('power-fill').style.width = '0%';
+            
+            javelinInterval = setInterval(() => {
+                javelinPower += 2;
+                if (javelinPower > 100) javelinPower = 0;
+                document.getElementById('power-fill').style.width = javelinPower + '%';
+            }, 50);
+            
+            document.addEventListener('keydown', javelinKeyPress);
+            document.addEventListener('keyup', javelinKeyRelease);
+        }
+
+        function javelinKeyPress(e) {
+            if (e.code === 'Space' && javelinCharging && currentGame === 'javelin') {
+                e.preventDefault();
+            }
+        }
+
+        function javelinKeyRelease(e) {
+            if (e.code === 'Space' && javelinCharging && currentGame === 'javelin') {
+                e.preventDefault();
+                throwJavelin();
+            }
+        }
+
+        function throwJavelin() {
+            javelinCharging = false;
+            clearInterval(javelinInterval);
+            document.removeEventListener('keydown', javelinKeyPress);
+            document.removeEventListener('keyup', javelinKeyRelease);
+
+            const distance = (javelinPower / 100) * 90 + 10;
+            const angle = 30 + (javelinPower / 100) * 15;
+
+            animateJavelinThrow(distance, angle);
+
+            if (distance > bestThrow) {
+                bestThrow = distance;
+                document.getElementById('best-throw').textContent = bestThrow.toFixed(1);
+            }
+
+            attemptsLeft--;
+            document.getElementById('attempts').textContent = attemptsLeft;
+
+            setTimeout(() => {
+                if (attemptsLeft > 0) {
+                    document.getElementById('javelin-throw').disabled = false;
+                } else {
+                    endJavelin();
+                }
+            }, 2000);
+        }
+
+        function animateJavelinThrow(distance, angle) {
+            const area = document.getElementById('javelin-area');
+            const javelin = document.createElement('div');
+            javelin.className = 'javelin';
+            javelin.style.left = '90px';
+            javelin.style.bottom = '80px';
+            javelin.style.transform = `rotate(-${angle}deg)`;
+            area.appendChild(javelin);
+
+            const landingX = 90 + distance * 3;
+            
+            let progress = 0;
+            const animInterval = setInterval(() => {
+                progress += 2;
+                const x = 90 + (distance * 3 * progress / 100);
+                const y = 80 + Math.sin(progress * Math.PI / 100) * 100;
+                const rotation = -angle + (progress / 100) * (90 + angle);
+                
+                javelin.style.left = x + 'px';
+                javelin.style.bottom = y + 'px';
+                javelin.style.transform = `rotate(-${rotation}deg)`;
+                
+                if (progress >= 100) {
+                    clearInterval(animInterval);
+                    addDistanceMarker(landingX, distance);
+                }
+            }, 20);
+        }
+
+        function addDistanceMarker(x, distance) {
+            const area = document.getElementById('javelin-area');
+            const marker = document.createElement('div');
+            marker.className = 'distance-marker';
+            marker.style.left = x + 'px';
+            marker.textContent = distance.toFixed(1) + 'm';
+            area.appendChild(marker);
+        }
+
+        function endJavelin() {
+            let message = '';
+            let medal = '';
+            if (bestThrow >= 70) {
+                medal = '🥇';
+                message = 'ORO! Lancio olimpionico!';
+            } else if (bestThrow >= 50) {
+                medal = '🥈';
+                message = 'ARGENTO! Ottima tecnica!';
+            } else {
+                medal = '🥉';
+                message = 'BRONZO! Continua ad allenarti!';
+            }
+
+            document.getElementById('javelin-results').innerHTML = `
+                <div class="medal">${medal}</div>
+                <h2>${message}</h2>
+                <p>Miglior lancio: <strong>${bestThrow.toFixed(1)}m</strong></p>
+            `;
+            document.getElementById('javelin-results').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
+athletics_game.html
+Displaying athletics_game.html.
